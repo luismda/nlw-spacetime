@@ -9,7 +9,7 @@ datasource db {
 
 model User {
   id         String @id @default(uuid())
-  github_id  String @unique
+  github_id  Int    @unique
   name       String
   login      String
   avatar_url String

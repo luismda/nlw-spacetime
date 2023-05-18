@@ -1,7 +1,4 @@
-import { useEffect } from 'react'
-import { StatusBar } from 'expo-status-bar'
-import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
-import * as SecureStore from 'expo-secure-store'
+import { useEffect, useState } from 'react'
 import {
   ActivityIndicator,
   ImageBackground,
@@ -9,20 +6,26 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import { StatusBar } from 'expo-status-bar'
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
+import * as SecureStore from 'expo-secure-store'
+import { useRouter } from 'expo-router'
 import { styled } from 'nativewind'
 import colors from 'tailwindcss/colors'
+
 import {
   useFonts,
   Roboto_400Regular,
   Roboto_700Bold,
 } from '@expo-google-fonts/roboto'
+
 import { BaiJamjuree_700Bold } from '@expo-google-fonts/bai-jamjuree'
 
-import { api } from './src/lib/api'
+import { api } from '../src/lib/api'
 
-import blurBackgroundImg from './src/assets/bg-blur.png'
-import Stripes from './src/assets/stripes.svg'
-import NLWSpacetimeLogo from './src/assets/nlw-spacetime-logo.svg'
+import blurBackgroundImg from '../src/assets/bg-blur.png'
+import Stripes from '../src/assets/stripes.svg'
+import NLWSpacetimeLogo from '../src/assets/nlw-spacetime-logo.svg'
 
 const StyledStripes = styled(Stripes)
 
@@ -34,6 +37,10 @@ const discovery = {
 }
 
 export default function App() {
+  const [isLoadingSignIn, setIsLoadingSignIn] = useState(false)
+
+  const router = useRouter()
+
   const [hasLoadedFonts] = useFonts({
     Roboto_400Regular,
     Roboto_700Bold,
@@ -51,22 +58,28 @@ export default function App() {
     discovery,
   )
 
+  function handleSignIn() {
+    setIsLoadingSignIn(true)
+    signInWithGitHub()
+  }
+
+  async function handleGitHubOAuthCode(code: string) {
+    const sessionResponse = await api.post<{ token: string }>('/session', {
+      code,
+    })
+
+    const { token } = sessionResponse.data
+
+    await SecureStore.setItemAsync('token', token)
+
+    router.push('/memories')
+  }
+
   useEffect(() => {
     if (response?.type === 'success') {
       const { code } = response.params
 
-      api
-        .post('/session', {
-          code,
-        })
-        .then((response) => {
-          const { token } = response.data
-
-          SecureStore.setItemAsync('token', token)
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      handleGitHubOAuthCode(code)
     }
   }, [response])
 
@@ -101,12 +114,18 @@ export default function App() {
 
         <TouchableOpacity
           activeOpacity={0.75}
-          className="rounded-full bg-green-500 px-5 py-2"
-          onPress={() => signInWithGitHub()}
+          className="w-56 items-center rounded-full bg-green-500 px-5 py-2"
+          disabled={isLoadingSignIn}
+          style={isLoadingSignIn ? { opacity: 0.7 } : undefined}
+          onPress={handleSignIn}
         >
-          <Text className="font-alt text-sm uppercase text-black">
-            Cadastrar lembrança
-          </Text>
+          {isLoadingSignIn ? (
+            <ActivityIndicator color={colors.gray[50]} />
+          ) : (
+            <Text className="font-alt text-sm uppercase text-black">
+              Cadastrar lembrança
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
 

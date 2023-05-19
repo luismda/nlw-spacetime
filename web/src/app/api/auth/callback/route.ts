@@ -11,7 +11,8 @@ export async function GET(request: NextRequest) {
 
   const { token } = sessionResponse.data
 
-  const redirectURL = new URL('/', request.url)
+  const redirectTo = request.cookies.get('redirectTo')?.value
+  const redirectURL = redirectTo ?? new URL('/', request.url)
 
   const cookieExpiresInSeconds = 60 * 60 * 24 * 7 // 7 days
 

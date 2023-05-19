@@ -1,23 +1,35 @@
 import 'dotenv/config'
 
+import { resolve } from 'node:path'
 import fastify from 'fastify'
-import cors from '@fastify/cors'
-import jwt from '@fastify/jwt'
+import fastifyCors from '@fastify/cors'
+import fastifyJWT from '@fastify/jwt'
+import fastifyMultipart from '@fastify/multipart'
+import fastifyStatic from '@fastify/static'
 
 import { authRoutes } from './routes/auth'
+import { uploadRoutes } from './routes/upload'
 import { memoriesRoutes } from './routes/memories'
 
 const app = fastify()
 
-app.register(cors, {
+app.register(fastifyCors, {
   origin: true,
 })
 
-app.register(jwt, {
+app.register(fastifyStatic, {
+  root: resolve(__dirname, '../uploads'),
+  prefix: '/uploads',
+})
+
+app.register(fastifyMultipart)
+
+app.register(fastifyJWT, {
   secret: process.env.JWT_SECRET ?? '',
 })
 
 app.register(authRoutes)
+app.register(uploadRoutes)
 app.register(memoriesRoutes)
 
 app

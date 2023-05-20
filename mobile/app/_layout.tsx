@@ -1,3 +1,5 @@
+import '../src/lib/dayjs'
+
 import { useState, useEffect } from 'react'
 import { ImageBackground } from 'react-native'
 import { SplashScreen, Stack } from 'expo-router'
@@ -52,11 +54,12 @@ export default function Layout() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: 'transparent' },
+          animation: 'simple_push',
         }}
       >
         <Stack.Screen name="index" redirect={isUserAuthenticated} />
-        <Stack.Screen name="new" />
         <Stack.Screen name="memories" />
+        <Stack.Screen name="new" />
       </Stack>
     </ImageBackground>
   )

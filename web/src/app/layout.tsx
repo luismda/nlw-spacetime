@@ -1,4 +1,6 @@
 import './globals.css'
+import '../lib/dayjs'
+
 import { ReactNode } from 'react'
 import { cookies } from 'next/headers'
 import {
@@ -46,7 +48,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Copyright />
           </div>
 
-          <div className="flex flex-col bg-[url(../assets/bg-stars.svg)] bg-cover p-16">
+          <div className="flex max-h-screen flex-col overflow-y-auto bg-[url(../assets/bg-stars.svg)] bg-cover">
             {children}
           </div>
         </main>

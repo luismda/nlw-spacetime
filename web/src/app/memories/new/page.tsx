@@ -5,7 +5,7 @@ import { NewMemoryForm } from '@/components/client/NewMemoryForm'
 
 export default function NewMemory() {
   return (
-    <div className="flex flex-1 flex-col gap-4">
+    <div className="flex flex-1 flex-col gap-4 p-16">
       <Link
         href="/"
         className="flex max-w-max items-center gap-1 text-sm text-gray-200 outline-none transition-colors hover:text-gray-100 focus:text-gray-100 focus:underline"

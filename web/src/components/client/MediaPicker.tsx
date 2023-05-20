@@ -7,7 +7,12 @@ interface Preview {
   type: 'image' | 'video'
 }
 
-export function MediaPicker() {
+interface MediaPickerProps {
+  preview?: Preview
+  onChangeMedia: () => void
+}
+
+export function MediaPicker({ onChangeMedia }: MediaPickerProps) {
   const [preview, setPreview] = useState<Preview | null>(null)
 
   function handleFileSelected(event: ChangeEvent<HTMLInputElement>) {
@@ -31,6 +36,8 @@ export function MediaPicker() {
       url: previewURL,
       type: fileType,
     })
+
+    onChangeMedia()
   }
 
   return (

@@ -1,28 +1,44 @@
 'use client'
 
-import { FormEvent } from 'react'
+import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Camera } from 'lucide-react'
 import Cookie from 'js-cookie'
 
 import { MediaPicker } from './MediaPicker'
+import { Button } from '../Button'
 import { api } from '@/lib/api'
 
 export function NewMemoryForm() {
+  const [isCreatingMemory, setIsCreatingMemory] = useState(false)
+  const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null)
+
   const router = useRouter()
+
+  function clearFormError() {
+    if (formErrorMessage) {
+      setFormErrorMessage(null)
+    }
+  }
 
   async function handleCreateMemory(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
 
-    const content = formData.get('content')
-    const media = formData.get('media')
+    const content = formData.get('content')?.toString()
+    const media = formData.get('media') as File
     const isPublic = formData.get('isPublic')
 
-    if (!content || !media) {
+    if (!content?.trim() || !media.name) {
+      setFormErrorMessage(
+        'Forneça uma descrição e uma mídia para criar uma lembrança.',
+      )
+
       return
     }
+
+    setIsCreatingMemory(true)
 
     const token = Cookie.get('token')
     api.defaults.headers.common.Authorization = `Bearer ${token}`
@@ -40,7 +56,15 @@ export function NewMemoryForm() {
 
       coverUrl = uploadResponse.data.file_url
     } catch (error) {
-      return console.error(error)
+      setIsCreatingMemory(false)
+
+      setFormErrorMessage(
+        'Não foi possível fazer o upload da mídia, tente novamente.',
+      )
+
+      console.error(error)
+
+      return
     }
 
     try {
@@ -50,7 +74,13 @@ export function NewMemoryForm() {
         cover_url: coverUrl,
       })
     } catch (error) {
-      return console.error(error)
+      setIsCreatingMemory(false)
+
+      setFormErrorMessage('Não foi possível criar a memória, tente novamente.')
+
+      console.error(error)
+
+      return
     }
 
     router.push('/')
@@ -77,21 +107,29 @@ export function NewMemoryForm() {
         </label>
       </div>
 
-      <MediaPicker />
+      <MediaPicker onChangeMedia={clearFormError} />
 
       <textarea
         name="content"
         spellCheck={false}
         placeholder="Fique livre para adicionar fotos, vídeos e relatos sobre essa experiência que você quer lembrar para sempre."
         className="flex-1 resize-none rounded border-0 bg-transparent p-0 text-lg leading-relaxed text-gray-100 placeholder:text-gray-400 focus:ring-0"
+        onChange={clearFormError}
       />
 
-      <button
+      {!!formErrorMessage && (
+        <p className="text-sm leading-relaxed text-red-500">
+          {formErrorMessage}
+        </p>
+      )}
+
+      <Button
         type="submit"
-        className="self-end rounded-full bg-green-500 px-5 py-3 font-alt text-sm uppercase leading-none text-black transition-colors hover:bg-green-600"
+        className="min-w-[92px] self-end"
+        isLoading={isCreatingMemory}
       >
         Salvar
-      </button>
+      </Button>
     </form>
   )
 }

@@ -6,7 +6,7 @@ export function Copyright() {
         href="https://github.com/luismda"
         target="_blank"
         rel="noreferrer"
-        className="underline hover:text-gray-100"
+        className="underline outline-none hover:text-gray-100 focus:text-gray-100"
       >
         Luís Miguel
       </a>{' '}
@@ -15,7 +15,7 @@ export function Copyright() {
         href="https://rocketseat.com.br"
         target="_blank"
         rel="noreferrer"
-        className="underline hover:text-gray-100"
+        className="underline outline-none hover:text-gray-100 focus:text-gray-100"
       >
         Rocketseat
       </a>

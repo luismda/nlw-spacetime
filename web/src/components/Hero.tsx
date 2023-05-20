@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import nlwSpacetimeLogo from '../assets/nlw-spacetime-logo.svg'
+import { Button } from './Button'
 
 export function Hero() {
   return (
@@ -18,12 +19,9 @@ export function Hero() {
         </p>
       </div>
 
-      <Link
-        href="/memories/new"
-        className="inline-block rounded-full bg-green-500 px-5 py-3 font-alt text-sm uppercase leading-none text-black transition-colors hover:bg-green-600"
-      >
-        CADASTRAR LEMBRANÇA
-      </Link>
+      <Button className="inline-block" asChild>
+        <Link href="/memories/new">CADASTRAR LEMBRANÇA</Link>
+      </Button>
     </div>
   )
 }

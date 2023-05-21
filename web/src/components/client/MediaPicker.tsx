@@ -8,12 +8,15 @@ interface Preview {
 }
 
 interface MediaPickerProps {
-  preview?: Preview
+  previewExisting?: Preview | null
   onChangeMedia: () => void
 }
 
-export function MediaPicker({ onChangeMedia }: MediaPickerProps) {
-  const [preview, setPreview] = useState<Preview | null>(null)
+export function MediaPicker({
+  previewExisting = null,
+  onChangeMedia,
+}: MediaPickerProps) {
+  const [preview, setPreview] = useState<Preview | null>(previewExisting)
 
   function handleFileSelected(event: ChangeEvent<HTMLInputElement>) {
     const { files } = event.target

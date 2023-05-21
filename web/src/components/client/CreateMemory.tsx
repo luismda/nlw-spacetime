@@ -1,0 +1,104 @@
+'use client'
+
+import { FormEvent, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Cookie from 'js-cookie'
+
+import { api } from '@/lib/api'
+
+import { MemoryForm } from './MemoryForm'
+
+interface FormMessage {
+  message: string
+  type: 'success' | 'error'
+}
+
+export function CreateMemory() {
+  const [isCreatingMemory, setIsCreatingMemory] = useState(false)
+  const [formMessage, setFormMessage] = useState<FormMessage | null>(null)
+
+  const router = useRouter()
+
+  function clearFormError() {
+    if (formMessage) {
+      setFormMessage(null)
+    }
+  }
+
+  async function handleCreateMemory(event: FormEvent<HTMLFormElement>) {
+    const formData = new FormData(event.currentTarget)
+
+    const content = formData.get('content')?.toString()
+    const media = formData.get('media') as File
+    const isPublic = formData.get('isPublic')
+
+    if (!content?.trim() || !media.name) {
+      setFormMessage({
+        message: 'Forneça uma descrição e uma mídia para criar uma lembrança.',
+        type: 'error',
+      })
+
+      return
+    }
+
+    setIsCreatingMemory(true)
+
+    const token = Cookie.get('token')
+    api.defaults.headers.common.Authorization = `Bearer ${token}`
+
+    const uploadFormData = new FormData()
+    uploadFormData.set('media', media)
+
+    let coverUrl
+
+    try {
+      const uploadResponse = await api.post<{ file_url: string }>(
+        '/upload',
+        uploadFormData,
+      )
+
+      coverUrl = uploadResponse.data.file_url
+    } catch (error) {
+      setIsCreatingMemory(false)
+
+      setFormMessage({
+        message: 'Não foi possível fazer o upload da mídia, tente novamente.',
+        type: 'error',
+      })
+
+      console.error(error)
+
+      return
+    }
+
+    try {
+      await api.post('/memories', {
+        content,
+        is_public: !!isPublic,
+        cover_url: coverUrl,
+      })
+    } catch (error) {
+      setIsCreatingMemory(false)
+
+      setFormMessage({
+        message: 'Não foi possível criar a lembrança, tente novamente.',
+        type: 'error',
+      })
+
+      console.error(error)
+
+      return
+    }
+
+    router.push('/')
+  }
+
+  return (
+    <MemoryForm
+      isLoading={isCreatingMemory}
+      formMessage={formMessage}
+      onClearError={clearFormError}
+      onSubmit={handleCreateMemory}
+    />
+  )
+}

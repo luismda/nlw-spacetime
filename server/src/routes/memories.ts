@@ -1,3 +1,5 @@
+import { unlink } from 'node:fs/promises'
+import { resolve } from 'node:path'
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 
@@ -82,7 +84,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
 
     const bodySchema = z.object({
       content: z.string(),
-      cover_url: z.string(),
+      cover_url: z.string().optional(),
       is_public: z.coerce.boolean().default(false),
     })
 
@@ -114,6 +116,15 @@ export async function memoriesRoutes(app: FastifyInstance) {
         is_public,
       },
     })
+
+    if (cover_url) {
+      const oldFileURL = new URL(memory.cover_url)
+      const oldFilePath = resolve(__dirname, '../../').concat(
+        oldFileURL.pathname,
+      )
+
+      await unlink(oldFilePath)
+    }
 
     return reply.status(204).send()
   })

@@ -15,7 +15,6 @@ interface Memory {
   is_public: boolean
   created_at: string
   user: {
-    id: string
     login: string
   }
 }

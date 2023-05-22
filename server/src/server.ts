@@ -10,6 +10,7 @@ import fastifyStatic from '@fastify/static'
 import { authRoutes } from './routes/auth'
 import { uploadRoutes } from './routes/upload'
 import { memoriesRoutes } from './routes/memories'
+import { usersRoutes } from './routes/users'
 
 const app = fastify()
 
@@ -31,6 +32,7 @@ app.register(fastifyJWT, {
 app.register(authRoutes)
 app.register(uploadRoutes)
 app.register(memoriesRoutes)
+app.register(usersRoutes)
 
 app
   .listen({

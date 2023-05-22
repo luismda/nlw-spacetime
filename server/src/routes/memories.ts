@@ -40,19 +40,24 @@ export async function memoriesRoutes(app: FastifyInstance) {
 
     const { id } = paramsSchema.parse(request.params)
 
-    const memory = await prisma.memory.findUniqueOrThrow({
+    const memory = await prisma.memory.findUnique({
       where: {
         id,
       },
       include: {
         user: {
           select: {
-            id: true,
             login: true,
           },
         },
       },
     })
+
+    if (!memory) {
+      return reply.status(404).send({
+        message: 'Memory not found.',
+      })
+    }
 
     if (!memory.is_public && memory.user_id !== request.user.sub) {
       return reply.status(401).send()
@@ -116,7 +121,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
     })
 
     if (!memory) {
-      return reply.status(400).send({
+      return reply.status(404).send({
         message: 'Memory not found.',
       })
     }
@@ -169,7 +174,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
     })
 
     if (!memory) {
-      return reply.status(400).send({
+      return reply.status(404).send({
         message: 'Memory not found.',
       })
     }

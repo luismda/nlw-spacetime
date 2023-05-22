@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { EmptyMemories } from '@/components/EmptyMemories'
 import { api } from '@/lib/api'
 import { Memory } from '@/components/Memory'
+import dayjs from 'dayjs'
 
 interface MemoryResponse {
   id: string
@@ -39,15 +40,20 @@ export default async function Home() {
   return (
     <div className="flex flex-col gap-10 p-8">
       {memories.map(({ id, excerpt, cover_url, cover_type, created_at }) => {
+        const memoryDateFormatted = dayjs(created_at).format(
+          'DD[ de ]MMMM[, ]YYYY',
+        )
+
         return (
-          <Memory
-            key={id}
-            id={id}
-            excerpt={excerpt}
-            cover_url={cover_url}
-            cover_type={cover_type}
-            created_at={created_at}
-          />
+          <Memory.Root key={id}>
+            <Memory.Date>{memoryDateFormatted}</Memory.Date>
+
+            <Memory.Cover coverType={cover_type} coverUrl={cover_url} />
+
+            <Memory.Excerpt>{excerpt}</Memory.Excerpt>
+
+            <Memory.Link href={`/memories/${id}`}>Ler mais</Memory.Link>
+          </Memory.Root>
         )
       })}
     </div>

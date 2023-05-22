@@ -20,7 +20,7 @@ export function EmptyUserPublicMemories({
         className="h-10 w-10 rounded-full"
       />
 
-      <p className="w-[360px] text-center leading-relaxed">
+      <p className="text-center leading-relaxed sm:w-[360px]">
         {name} ainda não registrou nenhuma lembrança pública.
       </p>
     </div>

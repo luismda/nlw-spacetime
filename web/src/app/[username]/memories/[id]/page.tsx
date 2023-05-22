@@ -46,8 +46,8 @@ export default async function UserPublicMemory({
   const userPublicMemoriesURL = `${process.env.BASE_URL}/${memory.user.login}/memories`
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-16">
-      <time className="-ml-16 flex items-center gap-2 text-sm text-gray-100 before:h-px before:w-5 before:bg-gray-50">
+    <div className="flex flex-1 flex-col gap-4 p-8 lg:p-16">
+      <time className="-ml-8 flex items-center gap-2 text-sm text-gray-100 before:h-px before:w-5 before:bg-gray-50 lg:-ml-16">
         {memoryDateFormatted}
       </time>
 

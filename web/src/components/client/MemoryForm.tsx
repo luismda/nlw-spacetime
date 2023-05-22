@@ -45,7 +45,7 @@ export function MemoryForm({
       className="flex flex-1 flex-col gap-2"
       onSubmit={handleSubmitMemoryForm}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <label
           htmlFor="media"
           className="flex cursor-pointer items-center gap-1.5 text-sm text-gray-200 transition-colors focus-within:text-gray-100 focus-within:underline hover:text-gray-100"

@@ -4,7 +4,7 @@ import { api } from '@/lib/api'
 
 import { Memory } from '@/components/Memory'
 import { EmptyUserPublicMemories } from '@/components/EmptyUserPublicMemories'
-import Image from 'next/image'
+import { Avatar } from '@/components/Avatar'
 
 interface MemoryResponse {
   id: string
@@ -50,13 +50,7 @@ export default async function UserPublicMemories({
   return (
     <div className="p-8">
       <div className="flex items-center gap-3 text-left">
-        <Image
-          src={user.avatar_url}
-          width={40}
-          height={40}
-          alt=""
-          className="h-10 w-10 rounded-full"
-        />
+        <Avatar src={user.avatar_url} alt="" />
 
         <p className="max-w-[140px] text-sm leading-snug">
           {user.name}

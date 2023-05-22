@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import { Avatar } from './Avatar'
 
 interface EmptyUserPublicMemoriesProps {
   user: {
@@ -12,13 +12,7 @@ export function EmptyUserPublicMemories({
 }: EmptyUserPublicMemoriesProps) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-2 p-16">
-      <Image
-        src={avatarUrl}
-        width={40}
-        height={40}
-        alt=""
-        className="h-10 w-10 rounded-full"
-      />
+      <Avatar src={avatarUrl} alt="" />
 
       <p className="text-center leading-relaxed sm:w-[360px]">
         {name} ainda não registrou nenhuma lembrança pública.

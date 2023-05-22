@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import { api } from '@/lib/api'
 
 import { BackLink } from '@/components/BackLink'
+import { Avatar } from '@/components/Avatar'
 
 interface Memory {
   id: string
@@ -43,7 +44,7 @@ export default async function UserPublicMemory({
     'DD[ de ]MMMM[, ]YYYY',
   )
 
-  const userPublicMemoriesURL = `${process.env.BASE_URL}/${memory.user.login}/memories`
+  const userPublicMemoriesURL = `${process.env.NEXT_PUBLIC_BASE_URL}/${memory.user.login}/memories`
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-8 lg:p-16">
@@ -54,13 +55,7 @@ export default async function UserPublicMemory({
       <BackLink href={userPublicMemoriesURL}>voltar à timeline</BackLink>
 
       <div className="flex items-center gap-3 text-left">
-        <Image
-          src={memory.user.avatar_url}
-          width={40}
-          height={40}
-          alt=""
-          className="h-10 w-10 rounded-full"
-        />
+        <Avatar src={memory.user.avatar_url} alt="" />
 
         <p className="max-w-[140px] text-sm leading-snug">{memory.user.name}</p>
       </div>

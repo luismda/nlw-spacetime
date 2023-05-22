@@ -61,8 +61,6 @@ export function CreateMemory() {
 
     const fileMaxSizeInBytes = 1024 * 1024 * 5 // 5mb
 
-    console.log(media.type, media.size)
-
     if (media.size > fileMaxSizeInBytes) {
       setFormMessage({
         message: 'A imagem ou vídeo de capa precisa ter no máximo 5MB.',

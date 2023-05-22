@@ -30,7 +30,11 @@ export function Button({
   return (
     <button disabled={isLoading} className={styles} {...props}>
       {isLoading ? (
-        <span className="inline-block h-3 w-3 animate-ping rounded-full bg-green-100" />
+        <span
+          aria-live="polite"
+          aria-busy="true"
+          className="inline-block h-3 w-3 animate-ping rounded-full bg-green-100"
+        />
       ) : (
         children
       )}

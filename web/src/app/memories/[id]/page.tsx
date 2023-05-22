@@ -39,7 +39,7 @@ export default async function MemoryDetails({ params }: MemoryDetailsProps) {
 
   const { memory } = memoryResponse.data
 
-  const publicURL = `${process.env.BASE_URL}/${memory.user.login}/memories/${memory.id}`
+  const publicURL = `${process.env.NEXT_PUBLIC_BASE_URL}/${memory.user.login}/memories/${memory.id}`
 
   const memoryDateFormatted = dayjs(memory.created_at).format(
     'DD[ de ]MMMM[, ]YYYY',

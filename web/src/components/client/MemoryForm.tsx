@@ -9,7 +9,6 @@ import { Button } from '../Button'
 
 interface Memory {
   id: string
-  user_id: string
   content: string
   cover_url: string
   is_public: boolean

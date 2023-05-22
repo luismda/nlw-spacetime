@@ -1,6 +1,7 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Cookie from 'js-cookie'
 
 import { api } from '@/lib/api'
@@ -15,7 +16,6 @@ interface FormMessage {
 interface EditMemoryProps {
   memory: {
     id: string
-    user_id: string
     content: string
     cover_url: string
     is_public: boolean
@@ -26,6 +26,8 @@ interface EditMemoryProps {
 export function EditMemory({ memory }: EditMemoryProps) {
   const [isEditingMemory, setIsEditingMemory] = useState(false)
   const [formMessage, setFormMessage] = useState<FormMessage | null>(null)
+
+  const router = useRouter()
 
   function clearFormError() {
     if (formMessage) {
@@ -99,6 +101,8 @@ export function EditMemory({ memory }: EditMemoryProps) {
 
       return
     }
+
+    router.refresh()
 
     setIsEditingMemory(false)
 

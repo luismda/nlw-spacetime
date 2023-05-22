@@ -43,6 +43,14 @@ export async function memoriesRoutes(app: FastifyInstance) {
       where: {
         id,
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            login: true,
+          },
+        },
+      },
     })
 
     if (!memory.is_public && memory.user_id !== request.user.sub) {
@@ -50,7 +58,10 @@ export async function memoriesRoutes(app: FastifyInstance) {
     }
 
     return {
-      memory,
+      memory: {
+        ...memory,
+        user_id: undefined,
+      },
     }
   })
 

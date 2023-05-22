@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers'
+import dayjs from 'dayjs'
 
 import { api } from '@/lib/api'
 
@@ -8,11 +9,14 @@ import { CopyToClipboardButton } from '@/components/client/CopyToClipboardButton
 
 interface Memory {
   id: string
-  user_id: string
   content: string
   cover_url: string
   is_public: boolean
   created_at: string
+  user: {
+    id: string
+    login: string
+  }
 }
 
 interface MemoryDetailsProps {
@@ -35,12 +39,26 @@ export default async function MemoryDetails({ params }: MemoryDetailsProps) {
 
   const { memory } = memoryResponse.data
 
+  const publicURL = `${process.env.BASE_URL}/${memory.user.login}/memories/${memory.id}`
+
+  const memoryDateFormatted = dayjs(memory.created_at).format(
+    'DD[ de ]MMMM[, ]YYYY',
+  )
+
   return (
     <div className="flex flex-1 flex-col gap-4 p-16">
-      <div className="flex items-center justify-between">
+      <time className="-ml-16 flex items-center gap-2 text-sm text-gray-100 before:h-px before:w-5 before:bg-gray-50">
+        {memoryDateFormatted}
+      </time>
+
+      <div className="mt-2 flex items-center justify-between">
         <BackLink href="/">voltar à timeline</BackLink>
 
-        <CopyToClipboardButton />
+        {memory.is_public && (
+          <CopyToClipboardButton type="button" contentToCopy={publicURL}>
+            copiar url pública
+          </CopyToClipboardButton>
+        )}
       </div>
 
       <EditMemory memory={memory} />

@@ -31,7 +31,7 @@ export function Memory({ id, excerpt, cover_url, created_at }: MemoryProps) {
 
       <Link
         href={`/memories/${id}`}
-        className="flex items-center gap-2 text-sm text-gray-200 outline-none transition-colors hover:text-gray-100 focus:text-gray-100 focus:underline"
+        className="flex max-w-max items-center gap-2 text-sm text-gray-200 outline-none transition-colors hover:text-gray-100 focus:text-gray-100 focus:underline"
       >
         Ler mais
         <ArrowRight className="h-4 w-4" />

@@ -18,6 +18,7 @@ interface EditMemoryProps {
     id: string
     content: string
     cover_url: string
+    cover_type: 'image' | 'video'
     is_public: boolean
     created_at: string
   }

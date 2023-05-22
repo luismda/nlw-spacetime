@@ -32,9 +32,40 @@ export function CreateMemory() {
     const media = formData.get('media') as File
     const isPublic = formData.get('isPublic')
 
-    if (!content?.trim() || !media.name) {
+    if (!media.name) {
       setFormMessage({
-        message: 'Forneça uma descrição e uma mídia para criar uma lembrança.',
+        message: 'Forneça uma mídia para criar uma lembrança.',
+        type: 'error',
+      })
+
+      return
+    }
+
+    if (!content?.trim()) {
+      setFormMessage({
+        message: 'Forneça uma descrição para criar uma lembrança.',
+        type: 'error',
+      })
+
+      return
+    }
+
+    if (!media.type.includes('image') && !media.type.includes('video')) {
+      setFormMessage({
+        message: 'A capa precisa ser uma imagem ou vídeo.',
+        type: 'error',
+      })
+
+      return
+    }
+
+    const fileMaxSizeInBytes = 1024 * 1024 * 5 // 5mb
+
+    console.log(media.type, media.size)
+
+    if (media.size > fileMaxSizeInBytes) {
+      setFormMessage({
+        message: 'A imagem ou vídeo de capa precisa ter no máximo 5MB.',
         type: 'error',
       })
 
@@ -71,11 +102,14 @@ export function CreateMemory() {
       return
     }
 
+    const coverType = media.type.includes('image') ? 'image' : 'video'
+
     try {
       await api.post('/memories', {
         content,
         is_public: !!isPublic,
         cover_url: coverUrl,
+        cover_type: coverType,
       })
     } catch (error) {
       setIsCreatingMemory(false)

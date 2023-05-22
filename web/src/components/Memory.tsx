@@ -7,10 +7,17 @@ interface MemoryProps {
   id: string
   excerpt: string
   cover_url: string
+  cover_type: 'image' | 'video'
   created_at: string
 }
 
-export function Memory({ id, excerpt, cover_url, created_at }: MemoryProps) {
+export function Memory({
+  id,
+  excerpt,
+  cover_url,
+  cover_type,
+  created_at,
+}: MemoryProps) {
   const dateFormatted = dayjs(created_at).format('DD[ de ]MMMM[, ]YYYY')
 
   return (
@@ -19,13 +26,21 @@ export function Memory({ id, excerpt, cover_url, created_at }: MemoryProps) {
         {dateFormatted}
       </time>
 
-      <Image
-        src={cover_url}
-        alt=""
-        width={592}
-        height={280}
-        className="aspect-video w-full rounded-lg object-cover"
-      />
+      {cover_type === 'image' ? (
+        <Image
+          src={cover_url}
+          alt=""
+          width={592}
+          height={280}
+          className="aspect-video w-full rounded-lg object-cover"
+        />
+      ) : (
+        <video
+          src={cover_url}
+          controls
+          className="aspect-video w-full rounded-lg object-cover"
+        />
+      )}
 
       <p className="text-lg leading-relaxed text-gray-100">{excerpt}</p>
 

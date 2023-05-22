@@ -25,6 +25,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
         return {
           id: memory.id,
           cover_url: memory.cover_url,
+          cover_type: memory.cover_type,
           excerpt: memory.content.substring(0, 115).concat('...'),
           created_at: memory.created_at,
         }
@@ -69,15 +70,19 @@ export async function memoriesRoutes(app: FastifyInstance) {
     const bodySchema = z.object({
       content: z.string(),
       cover_url: z.string(),
+      cover_type: z.enum(['image', 'video']),
       is_public: z.coerce.boolean().default(false),
     })
 
-    const { content, cover_url, is_public } = bodySchema.parse(request.body)
+    const { content, cover_url, cover_type, is_public } = bodySchema.parse(
+      request.body,
+    )
 
     await prisma.memory.create({
       data: {
         content,
         cover_url,
+        cover_type,
         is_public,
         user_id: request.user.sub,
       },
@@ -94,12 +99,15 @@ export async function memoriesRoutes(app: FastifyInstance) {
     const { id } = paramsSchema.parse(request.params)
 
     const bodySchema = z.object({
-      content: z.string(),
+      content: z.string().optional(),
       cover_url: z.string().optional(),
+      cover_type: z.enum(['image', 'video']).optional(),
       is_public: z.coerce.boolean().default(false),
     })
 
-    const { content, cover_url, is_public } = bodySchema.parse(request.body)
+    const { content, cover_url, cover_type, is_public } = bodySchema.parse(
+      request.body,
+    )
 
     const memory = await prisma.memory.findUnique({
       where: {
@@ -117,6 +125,12 @@ export async function memoriesRoutes(app: FastifyInstance) {
       return reply.status(401).send()
     }
 
+    if (cover_url && !cover_type) {
+      return reply.status(400).send({
+        message: 'A cover URL exists, but the cover type is not provided.',
+      })
+    }
+
     await prisma.memory.update({
       where: {
         id,
@@ -124,6 +138,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
       data: {
         content,
         cover_url,
+        cover_type,
         is_public,
       },
     })

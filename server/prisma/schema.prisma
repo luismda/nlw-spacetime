@@ -11,7 +11,7 @@ model User {
   id         String @id @default(uuid())
   github_id  Int    @unique
   name       String
-  login      String
+  login      String @unique
   avatar_url String
 
   memories Memory[]
@@ -19,13 +19,19 @@ model User {
   @@map("users")
 }
 
+enum CoverType {
+  image
+  video
+}
+
 model Memory {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   user_id    String
   cover_url  String
+  cover_type CoverType
   content    String
-  is_public  Boolean  @default(false)
-  created_at DateTime @default(now())
+  is_public  Boolean   @default(false)
+  created_at DateTime  @default(now())
 
   user User @relation(fields: [user_id], references: [id])
 

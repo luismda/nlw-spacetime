@@ -8,6 +8,7 @@ interface MemoryResponse {
   id: string
   excerpt: string
   cover_url: string
+  cover_type: 'image' | 'video'
   created_at: string
 }
 
@@ -37,13 +38,14 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col gap-10 p-8">
-      {memories.map(({ id, excerpt, cover_url, created_at }) => {
+      {memories.map(({ id, excerpt, cover_url, cover_type, created_at }) => {
         return (
           <Memory
             key={id}
             id={id}
             excerpt={excerpt}
             cover_url={cover_url}
+            cover_type={cover_type}
             created_at={created_at}
           />
         )

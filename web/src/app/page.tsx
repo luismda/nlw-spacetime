@@ -1,9 +1,9 @@
 import { cookies } from 'next/headers'
+import dayjs from 'dayjs'
 
 import { EmptyMemories } from '@/components/EmptyMemories'
 import { api } from '@/lib/api'
 import { Memory } from '@/components/Memory'
-import dayjs from 'dayjs'
 
 interface MemoryResponse {
   id: string

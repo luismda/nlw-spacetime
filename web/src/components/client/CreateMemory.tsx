@@ -109,6 +109,10 @@ export function CreateMemory() {
         cover_url: coverUrl,
         cover_type: coverType,
       })
+
+      router.push('/', {
+        forceOptimisticNavigation: true,
+      })
     } catch (error) {
       setIsCreatingMemory(false)
 
@@ -118,11 +122,7 @@ export function CreateMemory() {
       })
 
       console.error(error)
-
-      return
     }
-
-    router.push('/')
   }
 
   return (

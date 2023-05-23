@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Icon from '@expo/vector-icons/Feather'
-import { Link, useRouter } from 'expo-router'
+import { Link, useRouter, useFocusEffect } from 'expo-router'
 import { Video, ResizeMode } from 'expo-av'
 import * as SecureStore from 'expo-secure-store'
 import colors from 'tailwindcss/colors'
 import dayjs from 'dayjs'
 
-import { api } from '../src/lib/api'
-import NLWSpacetimeLogo from '../src/assets/nlw-spacetime-logo.svg'
+import { api } from '../../src/lib/api'
+import NLWSpacetimeLogo from '../../src/assets/nlw-spacetime-logo.svg'
 
 interface Memory {
   id: string
@@ -50,9 +50,9 @@ export default function Memories() {
     }
   }
 
-  useEffect(() => {
+  useFocusEffect(() => {
     fetchMemories()
-  }, [])
+  })
 
   return (
     <View className="flex-1" style={{ paddingTop: top }}>
@@ -69,7 +69,7 @@ export default function Memories() {
             <Icon name="log-out" size={16} color={colors.red[500]} />
           </TouchableOpacity>
 
-          <Link href="/new" asChild>
+          <Link href="/memories/new" asChild>
             <TouchableOpacity
               accessibilityLabel="Adicionar nova lembrança"
               activeOpacity={0.7}
@@ -85,7 +85,7 @@ export default function Memories() {
         <View className="flex-1 items-center justify-center p-8">
           <Text className="text-center font-body leading-relaxed text-gray-100">
             Você ainda não registrou nenhuma lembrança, comece a{' '}
-            <Link href="/new" className="underline">
+            <Link href="/memories/new" className="underline">
               criar agora
             </Link>
             !

@@ -59,7 +59,9 @@ export async function edit(request: FastifyRequest, reply: FastifyReply) {
 
   if (cover_url) {
     const oldFileURL = new URL(memory.cover_url)
-    const oldFilePath = resolve(__dirname, '../../').concat(oldFileURL.pathname)
+    const oldFilePath = resolve(__dirname, '../../../../').concat(
+      oldFileURL.pathname,
+    )
 
     await unlink(oldFilePath)
   }

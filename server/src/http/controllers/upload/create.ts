@@ -35,7 +35,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
   const fileName = fileId.concat(extension)
 
   const writeStream = createWriteStream(
-    resolve(__dirname, '../../uploads/', fileName),
+    resolve(__dirname, '../../../../uploads/', fileName),
   )
 
   await pump(upload.file, writeStream)

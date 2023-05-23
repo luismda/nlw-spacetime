@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
 
-  const sessionResponse = await api.post<{ token: string }>('/session', {
+  const sessionResponse = await api.post<{ token: string }>('/session/web', {
     code,
   })
 

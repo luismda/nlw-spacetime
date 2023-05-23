@@ -38,15 +38,20 @@ export default function App() {
   }
 
   async function handleGitHubOAuthCode(code: string) {
-    const sessionResponse = await api.post<{ token: string }>('/session', {
-      code,
-    })
+    const sessionResponse = await api.post<{ token: string }>(
+      '/session/mobile',
+      {
+        code,
+      },
+    )
 
     const { token } = sessionResponse.data
 
     await SecureStore.setItemAsync('token', token)
 
     router.push('/memories')
+
+    setIsLoadingSignIn(false)
   }
 
   useEffect(() => {
@@ -80,7 +85,7 @@ export default function App() {
           onPress={handleSignIn}
         >
           {isLoadingSignIn ? (
-            <ActivityIndicator color={colors.gray[50]} />
+            <ActivityIndicator color={colors.black} />
           ) : (
             <Text className="font-alt text-sm uppercase text-black">
               Cadastrar lembrança

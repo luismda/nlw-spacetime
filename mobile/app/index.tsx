@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native'
+import { Text, View } from 'react-native'
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
 import * as SecureStore from 'expo-secure-store'
 import { useRouter } from 'expo-router'
-import colors from 'tailwindcss/colors'
 
 import { api } from '../src/lib/api'
 
 import NLWSpacetimeLogo from '../src/assets/nlw-spacetime-logo.svg'
+
+import { Button } from '../src/components/Button'
 
 const discovery = {
   authorizationEndpoint: 'https://github.com/login/oauth/authorize',
@@ -77,21 +78,13 @@ export default function App() {
           </Text>
         </View>
 
-        <TouchableOpacity
-          activeOpacity={0.75}
-          className="w-56 items-center rounded-full bg-green-500 px-5 py-2"
-          disabled={isLoadingSignIn}
-          style={isLoadingSignIn ? { opacity: 0.7 } : undefined}
+        <Button
+          className="min-w-[224]"
+          isLoading={isLoadingSignIn}
           onPress={handleSignIn}
         >
-          {isLoadingSignIn ? (
-            <ActivityIndicator color={colors.black} />
-          ) : (
-            <Text className="font-alt text-sm uppercase text-black">
-              Cadastrar lembrança
-            </Text>
-          )}
-        </TouchableOpacity>
+          Cadastrar lembrança
+        </Button>
       </View>
 
       <Text className="text-center font-body text-sm leading-relaxed text-gray-200">

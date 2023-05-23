@@ -1,76 +1,79 @@
 import { useState } from 'react'
-import {
-  Image,
-  ScrollView,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native'
-import { Video, ResizeMode } from 'expo-av'
-import * as ImagePicker from 'expo-image-picker'
-import Icon from '@expo/vector-icons/Feather'
+import { ScrollView, Switch, Text, TextInput, View } from 'react-native'
 import colors from 'tailwindcss/colors'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useToast } from 'react-native-toast-notifications'
 
-interface Preview {
-  url: string
-  type: 'image' | 'video'
-  extension: string
+import { Button } from './Button'
+import { MediaPicker, Preview } from './MediaPicker'
+
+interface Memory {
+  content: string
+  isPublic: boolean
+  coverUrl: string
+  coverType: 'image' | 'video'
 }
 
 export interface MemoryFormData {
   content: string
   isPublic: boolean
-  preview: Preview
+  mediaUrl: string
+  mediaType: 'image' | 'video'
 }
 
 interface MemoryFormProps {
-  existingMemory?: MemoryFormData | null
+  memory?: Memory | null
   onSubmit: (data: MemoryFormData) => Promise<void>
 }
 
-export function MemoryForm({ existingMemory, onSubmit }: MemoryFormProps) {
+export function MemoryForm({ memory = null, onSubmit }: MemoryFormProps) {
   const { bottom } = useSafeAreaInsets()
 
-  const [content, setContent] = useState(existingMemory?.content ?? '')
-  const [isPublic, setIsPublic] = useState(existingMemory?.isPublic ?? false)
+  const toast = useToast()
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const [content, setContent] = useState(memory?.content ?? '')
+  const [isPublic, setIsPublic] = useState(memory?.isPublic ?? false)
+
   const [preview, setPreview] = useState<Preview | null>(
-    existingMemory?.preview ?? null,
+    memory
+      ? {
+          url: memory.coverUrl,
+          type: memory.coverType,
+        }
+      : null,
   )
 
-  async function handleOpenMediaPicker() {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        quality: 1,
-      })
-
-      const file = result.assets[0]
-
-      if (!file || result.canceled) {
-        return
-      }
-
-      setPreview({
-        url: file.uri,
-        type: file.type,
-        extension: file.type === 'image' ? 'jpg' : 'mp4',
-      })
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   async function handleSubmit() {
+    if (!preview) {
+      toast.show('Forneça uma mídia para a lembrança.', {
+        type: 'danger',
+      })
+
+      return
+    }
+
+    if (!content.trim()) {
+      toast.show('Forneça o conteúdo da lembrança.', {
+        type: 'danger',
+      })
+
+      return
+    }
+
     const memoryFormData = {
       content,
       isPublic,
-      preview,
+      mediaUrl: preview.url,
+      mediaType: preview.type,
     }
 
+    setIsLoading(true)
+
     await onSubmit(memoryFormData)
+
+    setIsLoading(false)
   }
 
   return (
@@ -90,38 +93,7 @@ export function MemoryForm({ existingMemory, onSubmit }: MemoryFormProps) {
         </Text>
       </View>
 
-      {preview ? (
-        <View className="h-32 items-center justify-center rounded-lg border border-dashed border-gray-500">
-          {preview.type === 'image' ? (
-            <Image
-              source={{ uri: preview.url }}
-              alt=""
-              className="h-full w-full rounded-lg object-cover"
-            />
-          ) : (
-            <Video
-              source={{ uri: preview.url }}
-              useNativeControls
-              resizeMode={ResizeMode.COVER}
-              isLooping
-              className="h-full w-full rounded-lg object-cover"
-            />
-          )}
-        </View>
-      ) : (
-        <TouchableOpacity
-          activeOpacity={0.7}
-          className="h-32 items-center justify-center rounded-lg border border-dashed border-gray-500 bg-black/20"
-          onPress={handleOpenMediaPicker}
-        >
-          <View className="flex-row items-center gap-2">
-            <Icon name="image" color={colors.gray[200]} />
-            <Text className="font-body text-sm text-gray-200">
-              Adicionar foto ou vídeo de capa
-            </Text>
-          </View>
-        </TouchableOpacity>
-      )}
+      <MediaPicker preview={preview} onPreviewChange={setPreview} />
 
       <TextInput
         multiline
@@ -134,13 +106,13 @@ export function MemoryForm({ existingMemory, onSubmit }: MemoryFormProps) {
         onChangeText={setContent}
       />
 
-      <TouchableOpacity
-        activeOpacity={0.75}
-        className="items-center self-end rounded-full bg-green-500 px-5 py-2"
+      <Button
+        className="min-w-[94] self-end"
+        isLoading={isLoading}
         onPress={handleSubmit}
       >
-        <Text className="font-alt text-sm uppercase text-black">Salvar</Text>
-      </TouchableOpacity>
+        Salvar
+      </Button>
     </ScrollView>
   )
 }

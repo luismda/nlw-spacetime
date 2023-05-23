@@ -4,40 +4,42 @@ import Icon from '@expo/vector-icons/Feather'
 import { Link, useRouter } from 'expo-router'
 import * as SecureStore from 'expo-secure-store'
 import colors from 'tailwindcss/colors'
+import { useToast } from 'react-native-toast-notifications'
 
 import { api } from '../../src/lib/api'
 
 import NLWSpacetimeLogo from '../../src/assets/nlw-spacetime-logo.svg'
 
+import { getExtensionByFilename } from '../../src/utils/get-extension-by-filename'
 import { MemoryForm, MemoryFormData } from '../../src/components/MemoryForm'
 
 export default function NewMemory() {
   const { top } = useSafeAreaInsets()
   const router = useRouter()
 
+  const toast = useToast()
+
   async function handleCreateMemory({
     content,
     isPublic,
-    preview,
+    mediaUrl,
+    mediaType,
   }: MemoryFormData) {
-    if (!preview || !content.trim()) {
-      return
-    }
-
     const token = await SecureStore.getItemAsync('token')
     api.defaults.headers.common.Authorization = `Bearer ${token}`
 
     let coverUrl: string
 
     try {
-      const uploadFormData = new FormData()
+      const fileExtension = getExtensionByFilename(mediaUrl)
 
       const file = {
-        uri: preview.url,
-        name: `media.${preview.extension}`,
-        type: preview.type.concat('/').concat(preview.extension),
+        uri: mediaUrl,
+        name: `media.${fileExtension}`,
+        type: mediaType.concat('/').concat(fileExtension),
       }
 
+      const uploadFormData = new FormData()
       uploadFormData.append('media', file as any)
 
       const uploadResponse = await api.post<{ file_url: string }>(
@@ -52,7 +54,13 @@ export default function NewMemory() {
 
       coverUrl = uploadResponse.data.file_url
     } catch (error) {
-      return console.error(error)
+      console.error(error)
+
+      toast.show('Ocorreu um erro ao fazer upload da mídia.', {
+        type: 'danger',
+      })
+
+      return
     }
 
     try {
@@ -60,11 +68,21 @@ export default function NewMemory() {
         content,
         is_public: isPublic,
         cover_url: coverUrl,
-        cover_type: preview.type,
+        cover_type: mediaType,
       })
     } catch (error) {
-      return console.error(error)
+      console.error(error)
+
+      toast.show('Ocorreu um erro ao registrar a lembrança.', {
+        type: 'danger',
+      })
+
+      return
     }
+
+    toast.show('Lembrança registrada!', {
+      type: 'success',
+    })
 
     router.push('/memories')
   }

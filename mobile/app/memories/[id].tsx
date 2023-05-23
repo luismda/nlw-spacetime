@@ -5,11 +5,13 @@ import Icon from '@expo/vector-icons/Feather'
 import { Link, useSearchParams } from 'expo-router'
 import * as SecureStore from 'expo-secure-store'
 import colors from 'tailwindcss/colors'
+import { useToast } from 'react-native-toast-notifications'
 
 import { api } from '../../src/lib/api'
 
 import NLWSpacetimeLogo from '../../src/assets/nlw-spacetime-logo.svg'
 
+import { getExtensionByFilename } from '../../src/utils/get-extension-by-filename'
 import { MemoryForm, MemoryFormData } from '../../src/components/MemoryForm'
 
 interface Memory {
@@ -31,29 +33,29 @@ export default function EditMemory() {
 
   const { id } = useSearchParams<{ id: string }>()
 
+  const toast = useToast()
+
   async function handleEditMemory({
     content,
     isPublic,
-    preview,
+    mediaUrl,
+    mediaType,
   }: MemoryFormData) {
-    if (!preview || !content.trim()) {
-      return
-    }
-
     const token = await SecureStore.getItemAsync('token')
     api.defaults.headers.common.Authorization = `Bearer ${token}`
 
     let coverUrl: string
 
     try {
-      const uploadFormData = new FormData()
+      const fileExtension = getExtensionByFilename(mediaUrl)
 
       const file = {
-        uri: preview.url,
-        name: `media.${preview.extension}`,
-        type: preview.type.concat('/').concat(preview.extension),
+        uri: mediaUrl,
+        name: `media.${fileExtension}`,
+        type: mediaType.concat('/').concat(fileExtension),
       }
 
+      const uploadFormData = new FormData()
       uploadFormData.append('media', file as any)
 
       const uploadResponse = await api.post<{ file_url: string }>(
@@ -68,7 +70,13 @@ export default function EditMemory() {
 
       coverUrl = uploadResponse.data.file_url
     } catch (error) {
-      return console.error(error)
+      console.error(error)
+
+      toast.show('Ocorreu um erro ao fazer upload da mídia.', {
+        type: 'danger',
+      })
+
+      return
     }
 
     try {
@@ -76,11 +84,21 @@ export default function EditMemory() {
         content,
         is_public: isPublic,
         cover_url: coverUrl,
-        cover_type: preview.type,
+        cover_type: mediaType,
       })
     } catch (error) {
-      return console.error(error)
+      console.error(error)
+
+      toast.show('Ocorreu um erro ao editar a lembrança.', {
+        type: 'danger',
+      })
+
+      return
     }
+
+    toast.show('Lembrança salva!', {
+      type: 'success',
+    })
   }
 
   async function getMemory() {
@@ -99,6 +117,10 @@ export default function EditMemory() {
       setMemory(memoryResponse.data.memory)
     } catch (error) {
       console.error(error)
+
+      toast.show('Não foi possível carregar os dados da lembrança.', {
+        type: 'danger',
+      })
     }
   }
 
@@ -123,14 +145,11 @@ export default function EditMemory() {
 
       {memory && (
         <MemoryForm
-          existingMemory={{
+          memory={{
             content: memory.content,
             isPublic: memory.is_public,
-            preview: {
-              url: memory.cover_url,
-              type: memory.cover_type,
-              extension: memory.cover_type === 'image' ? 'jpg' : 'mp4',
-            },
+            coverUrl: memory.cover_url,
+            coverType: memory.cover_type,
           }}
           onSubmit={handleEditMemory}
         />

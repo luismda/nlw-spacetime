@@ -6,6 +6,8 @@ import { SplashScreen, Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as SecureStore from 'expo-secure-store'
 import { styled } from 'nativewind'
+import { ToastProvider } from 'react-native-toast-notifications'
+import colors from 'tailwindcss/colors'
 
 import {
   useFonts,
@@ -42,26 +44,34 @@ export default function Layout() {
   }
 
   return (
-    <ImageBackground
-      source={blurBackgroundImg}
-      className="relative flex-1 bg-gray-900"
-      imageStyle={{ position: 'absolute', left: '-100%' }}
+    <ToastProvider
+      placement="bottom"
+      offsetBottom={40}
+      textStyle={{ textAlign: 'center' }}
+      successColor={colors.green[500]}
+      dangerColor={colors.red[500]}
     >
-      <StyledStripes className="absolute left-2" />
-      <StatusBar style="light" translucent />
-
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: 'transparent' },
-          animation: 'simple_push',
-        }}
+      <ImageBackground
+        source={blurBackgroundImg}
+        className="relative flex-1 bg-gray-900"
+        imageStyle={{ position: 'absolute', left: '-100%' }}
       >
-        <Stack.Screen name="index" redirect={isUserAuthenticated} />
-        <Stack.Screen name="memories/index" />
-        <Stack.Screen name="memories/new" />
-        <Stack.Screen name="memories/[id]" />
-      </Stack>
-    </ImageBackground>
+        <StyledStripes className="absolute left-2" />
+        <StatusBar style="light" translucent />
+
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: 'transparent' },
+            animation: 'simple_push',
+          }}
+        >
+          <Stack.Screen name="index" redirect={isUserAuthenticated} />
+          <Stack.Screen name="memories/index" />
+          <Stack.Screen name="memories/new" />
+          <Stack.Screen name="memories/[id]" />
+        </Stack>
+      </ImageBackground>
+    </ToastProvider>
   )
 }

@@ -1,5 +1,12 @@
 import { useState } from 'react'
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Icon from '@expo/vector-icons/Feather'
 import { Link, useRouter, useFocusEffect } from 'expo-router'
@@ -7,6 +14,7 @@ import { Video, ResizeMode } from 'expo-av'
 import * as SecureStore from 'expo-secure-store'
 import colors from 'tailwindcss/colors'
 import dayjs from 'dayjs'
+import { useToast } from 'react-native-toast-notifications'
 
 import { api } from '../../src/lib/api'
 import NLWSpacetimeLogo from '../../src/assets/nlw-spacetime-logo.svg'
@@ -21,9 +29,13 @@ interface Memory {
 
 export default function Memories() {
   const [memories, setMemories] = useState<Memory[]>([])
+  const [isLoadingMemories, setIsLoadingMemories] = useState(true)
+
   const { top, bottom } = useSafeAreaInsets()
 
   const router = useRouter()
+
+  const toast = useToast()
 
   async function handleLogout() {
     await SecureStore.deleteItemAsync('token')
@@ -47,6 +59,12 @@ export default function Memories() {
       setMemories(memoriesResponse.data.memories)
     } catch (error) {
       console.error(error)
+
+      toast.show('Não foi possível carregar suas lembranças.', {
+        type: 'danger',
+      })
+    } finally {
+      setIsLoadingMemories(false)
     }
   }
 
@@ -83,13 +101,17 @@ export default function Memories() {
 
       {memories.length === 0 ? (
         <View className="flex-1 items-center justify-center p-8">
-          <Text className="text-center font-body leading-relaxed text-gray-100">
-            Você ainda não registrou nenhuma lembrança, comece a{' '}
-            <Link href="/memories/new" className="underline">
-              criar agora
-            </Link>
-            !
-          </Text>
+          {isLoadingMemories ? (
+            <ActivityIndicator color={colors.gray[200]} />
+          ) : (
+            <Text className="text-center font-body leading-relaxed text-gray-100">
+              Você ainda não registrou nenhuma lembrança, comece a{' '}
+              <Link href="/memories/new" className="underline">
+                criar agora
+              </Link>
+              !
+            </Text>
+          )}
         </View>
       ) : (
         <ScrollView

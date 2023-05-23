@@ -11,6 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Icon from '@expo/vector-icons/Feather'
 import * as ImagePicker from 'expo-image-picker'
+import { Video, ResizeMode } from 'expo-av'
 import { Link, useRouter } from 'expo-router'
 import * as SecureStore from 'expo-secure-store'
 import colors from 'tailwindcss/colors'
@@ -32,7 +33,7 @@ export default function NewMemory() {
   const [isPublic, setIsPublic] = useState(false)
   const [preview, setPreview] = useState<Preview | null>(null)
 
-  async function handleOpenImagePicker() {
+  async function handleOpenMediaPicker() {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -85,6 +86,7 @@ export default function NewMemory() {
           },
         },
       )
+
       coverUrl = uploadResponse.data.file_url
     } catch (error) {
       return console.error(error)
@@ -134,30 +136,38 @@ export default function NewMemory() {
           </Text>
         </View>
 
-        <TouchableOpacity
-          activeOpacity={0.7}
-          className="h-32 items-center justify-center rounded-lg border border-dashed border-gray-500 bg-black/20"
-          onPress={handleOpenImagePicker}
-        >
-          {preview ? (
-            preview.type === 'image' ? (
+        {preview ? (
+          <View className="h-32 items-center justify-center rounded-lg border border-dashed border-gray-500">
+            {preview.type === 'image' ? (
               <Image
                 source={{ uri: preview.url }}
                 alt=""
                 className="h-full w-full rounded-lg object-cover"
               />
             ) : (
-              <Text>video</Text>
-            )
-          ) : (
+              <Video
+                source={{ uri: preview.url }}
+                useNativeControls
+                resizeMode={ResizeMode.COVER}
+                isLooping
+                className="h-full w-full rounded-lg object-cover"
+              />
+            )}
+          </View>
+        ) : (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            className="h-32 items-center justify-center rounded-lg border border-dashed border-gray-500 bg-black/20"
+            onPress={handleOpenMediaPicker}
+          >
             <View className="flex-row items-center gap-2">
               <Icon name="image" color={colors.gray[200]} />
               <Text className="font-body text-sm text-gray-200">
                 Adicionar foto ou vídeo de capa
               </Text>
             </View>
-          )}
-        </TouchableOpacity>
+          </TouchableOpacity>
+        )}
 
         <TextInput
           multiline

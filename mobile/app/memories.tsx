@@ -3,6 +3,7 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Icon from '@expo/vector-icons/Feather'
 import { Link, useRouter } from 'expo-router'
+import { Video, ResizeMode } from 'expo-av'
 import * as SecureStore from 'expo-secure-store'
 import colors from 'tailwindcss/colors'
 import dayjs from 'dayjs'
@@ -14,6 +15,7 @@ interface Memory {
   id: string
   excerpt: string
   cover_url: string
+  cover_type: 'image' | 'video'
   created_at: string
 }
 
@@ -104,13 +106,26 @@ export default function Memories() {
                   </Text>
                 </View>
                 <View className="space-y-4 px-8">
-                  <Image
-                    source={{
-                      uri: memory.cover_url,
-                    }}
-                    alt=""
-                    className="aspect-video w-full rounded-lg object-cover"
-                  />
+                  {memory.cover_type === 'image' ? (
+                    <Image
+                      source={{
+                        uri: memory.cover_url,
+                      }}
+                      alt=""
+                      className="aspect-video w-full rounded-lg object-cover"
+                    />
+                  ) : (
+                    <Video
+                      source={{
+                        uri: memory.cover_url,
+                      }}
+                      useNativeControls
+                      resizeMode={ResizeMode.COVER}
+                      isLooping
+                      className="aspect-video w-full rounded-lg object-cover"
+                    />
+                  )}
+
                   <Text className="font-body text-base leading-relaxed text-gray-100">
                     {memory.excerpt}
                   </Text>

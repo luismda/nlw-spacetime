@@ -3,7 +3,6 @@ import { TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Icon from '@expo/vector-icons/Feather'
 import { Link, useSearchParams } from 'expo-router'
-import * as SecureStore from 'expo-secure-store'
 import colors from 'tailwindcss/colors'
 import { useToast } from 'react-native-toast-notifications'
 
@@ -41,9 +40,6 @@ export default function EditMemory() {
     mediaUrl,
     mediaType,
   }: MemoryFormData) {
-    const token = await SecureStore.getItemAsync('token')
-    api.defaults.headers.common.Authorization = `Bearer ${token}`
-
     let coverUrl: string
 
     try {
@@ -102,16 +98,9 @@ export default function EditMemory() {
   }
 
   async function getMemory() {
-    const token = await SecureStore.getItemAsync('token')
-
     try {
       const memoryResponse = await api.get<{ memory: Memory }>(
         `/memories/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
       )
 
       setMemory(memoryResponse.data.memory)

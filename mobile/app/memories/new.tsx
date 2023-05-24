@@ -2,7 +2,6 @@ import { TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Icon from '@expo/vector-icons/Feather'
 import { Link, useRouter } from 'expo-router'
-import * as SecureStore from 'expo-secure-store'
 import colors from 'tailwindcss/colors'
 import { useToast } from 'react-native-toast-notifications'
 
@@ -25,9 +24,6 @@ export default function NewMemory() {
     mediaUrl,
     mediaType,
   }: MemoryFormData) {
-    const token = await SecureStore.getItemAsync('token')
-    api.defaults.headers.common.Authorization = `Bearer ${token}`
-
     let coverUrl: string
 
     try {

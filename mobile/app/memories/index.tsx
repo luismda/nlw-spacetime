@@ -9,14 +9,16 @@ import {
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Icon from '@expo/vector-icons/Feather'
-import { Link, useRouter, useFocusEffect } from 'expo-router'
+import { Link, useFocusEffect } from 'expo-router'
 import { Video, ResizeMode } from 'expo-av'
-import * as SecureStore from 'expo-secure-store'
 import colors from 'tailwindcss/colors'
 import dayjs from 'dayjs'
 import { useToast } from 'react-native-toast-notifications'
 
+import { useAuth } from '../../src/hooks/useAuth'
+
 import { api } from '../../src/lib/api'
+
 import NLWSpacetimeLogo from '../../src/assets/nlw-spacetime-logo.svg'
 
 interface Memory {
@@ -32,28 +34,14 @@ export default function Memories() {
   const [isLoadingMemories, setIsLoadingMemories] = useState(true)
 
   const { top, bottom } = useSafeAreaInsets()
-
-  const router = useRouter()
-
   const toast = useToast()
 
-  async function handleLogout() {
-    await SecureStore.deleteItemAsync('token')
-
-    router.push('/')
-  }
+  const { signOut } = useAuth()
 
   async function fetchMemories() {
-    const token = await SecureStore.getItemAsync('token')
-
     try {
       const memoriesResponse = await api.get<{ memories: Memory[] }>(
         '/memories',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
       )
 
       setMemories(memoriesResponse.data.memories)
@@ -82,7 +70,7 @@ export default function Memories() {
             accessibilityLabel="Fazer logout"
             activeOpacity={0.7}
             className="h-10 w-10 items-center justify-center"
-            onPress={handleLogout}
+            onPress={signOut}
           >
             <Icon name="log-out" size={16} color={colors.red[500]} />
           </TouchableOpacity>
